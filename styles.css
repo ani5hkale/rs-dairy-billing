@@ -949,3 +949,230 @@ input[type="file"]::file-selector-button:hover {
     flex-shrink: 0 !important;
     white-space: nowrap !important;
 }
+
+/* --- Mobile Top Header Styles --- */
+.mobile-top-header {
+    display: none;
+}
+
+/* Theme toggle button in header styling */
+.theme-toggle-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: var(--text-primary);
+    padding: 8px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color var(--transition-fast);
+}
+
+.theme-toggle-btn:hover {
+    background-color: var(--primary-light);
+}
+
+.logo-icon-sm {
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1rem;
+    font-weight: 800;
+    box-shadow: 0 4px 8px rgba(79, 70, 229, 0.2);
+}
+
+/* --- Mobile Responsive Layout --- */
+@media (max-width: 600px) {
+    .mobile-top-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 16px;
+        background-color: var(--bg-card);
+        border-bottom: 1px solid var(--border-color);
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 60px;
+        z-index: 150;
+        backdrop-filter: blur(var(--glass-blur));
+        transition: background-color var(--transition-normal), border-color var(--transition-normal);
+    }
+
+    .mobile-logo-container {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .mobile-logo-container .logo-text h1 {
+        font-size: 1rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, var(--text-primary), var(--text-secondary));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    /* Convert Sidebar to Bottom Navigation */
+    aside {
+        width: 100% !important;
+        height: 65px !important;
+        position: fixed !important;
+        bottom: 0 !important;
+        top: auto !important;
+        left: 0 !important;
+        right: 0 !important;
+        border-right: none !important;
+        border-top: 1px solid var(--border-color) !important;
+        flex-direction: row !important;
+        justify-content: space-around !important;
+        align-items: center !important;
+        padding: 0 6px !important;
+        gap: 0 !important;
+        z-index: 150 !important;
+        background-color: var(--bg-card) !important;
+        box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05) !important;
+    }
+
+    .logo-container {
+        display: none !important;
+    }
+
+    .nav-menu {
+        flex-direction: row !important;
+        width: 100% !important;
+        justify-content: space-around !important;
+        gap: 0 !important;
+    }
+
+    .nav-item {
+        flex: 1 !important;
+        display: flex !important;
+        justify-content: center !important;
+    }
+
+    .nav-item button {
+        padding: 8px 4px !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 4px !important;
+        font-size: 0.72rem !important;
+        text-align: center !important;
+        border-radius: var(--radius-md) !important;
+        background: transparent !important;
+        color: var(--text-secondary) !important;
+        width: 100% !important;
+        height: auto !important;
+        box-shadow: none !important;
+    }
+
+    .nav-item button:hover {
+        background-color: var(--primary-light) !important;
+        color: var(--primary) !important;
+    }
+
+    .nav-item.active button {
+        background-color: var(--primary-light) !important;
+        color: var(--primary) !important;
+        font-weight: 700 !important;
+    }
+
+    .nav-item svg {
+        width: 20px !important;
+        height: 20px !important;
+        margin: 0 !important;
+    }
+
+    .nav-item span {
+        display: block !important;
+        font-size: 0.68rem !important;
+        font-weight: 600 !important;
+    }
+
+    .theme-toggle-container {
+        display: none !important;
+    }
+
+    /* Shift Main Content to accommodate Mobile Bars */
+    main {
+        margin-left: 0 !important;
+        width: 100% !important;
+        padding: 16px 16px 90px 16px !important;
+        margin-top: 60px !important;
+    }
+
+    /* Stacking buttons in Actions Bar */
+    .actions-bar {
+        flex-direction: column !important;
+        width: 100% !important;
+        gap: 12px !important;
+    }
+
+    .actions-bar .btn {
+        width: 100% !important;
+        justify-content: center !important;
+    }
+
+    /* Center Toast notifications on Mobile */
+    .toast-container {
+        bottom: auto !important;
+        top: 70px !important;
+        right: 16px !important;
+        left: 16px !important;
+    }
+    
+    .toast {
+        width: 100% !important;
+    }
+}
+
+/* --- Form Responsive Layout overrides (Mobile & Tablet) --- */
+@media (max-width: 768px) {
+    .form-grid {
+        grid-template-columns: 1fr !important;
+        gap: 16px !important;
+    }
+    
+    .form-grid > div[style*="grid-column"] {
+        grid-column: span 1 !important;
+    }
+
+    .settings-form-grid {
+        grid-template-columns: 1fr !important;
+        gap: 16px !important;
+    }
+
+    .settings-form-grid > div[style*="grid-column"] {
+        grid-column: span 1 !important;
+    }
+}
+
+/* --- Invoice Preview Container & Scroll styling --- */
+.invoice-preview-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 10px 0;
+    margin-bottom: 24px;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-color);
+    background-color: rgba(0, 0, 0, 0.02);
+}
+
+[data-theme="dark"] .invoice-preview-wrapper {
+    background-color: rgba(255, 255, 255, 0.01);
+}
+
+.invoice-preview-wrapper .invoice-preview-card {
+    width: 800px !important;
+    min-width: 800px !important;
+    margin: 0 auto !important;
+}

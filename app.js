@@ -159,20 +159,51 @@ function setupEventListeners() {
         });
     });
 
-    // Theme Toggle
+    // Theme Toggle Functionality (Desktop & Mobile)
     const themeCheckbox = document.getElementById('theme-checkbox');
-    themeCheckbox.addEventListener('change', () => {
-        const theme = themeCheckbox.checked ? 'dark' : 'light';
+    const mobileThemeBtn = document.getElementById('theme-toggle-btn');
+    const sunIcon = document.querySelector('.sun-icon');
+    const moonIcon = document.querySelector('.moon-icon');
+
+    function applyTheme(theme) {
         document.documentElement.setAttribute('data-theme', theme);
         localStorage.setItem('rs_dairy_theme_tax', theme);
-    });
+        
+        // Sync desktop checkbox
+        if (themeCheckbox) {
+            themeCheckbox.checked = (theme === 'dark');
+        }
+        
+        // Sync mobile button icons
+        if (sunIcon && moonIcon) {
+            if (theme === 'dark') {
+                sunIcon.style.display = 'block';
+                moonIcon.style.display = 'none';
+            } else {
+                sunIcon.style.display = 'none';
+                moonIcon.style.display = 'block';
+            }
+        }
+    }
+
+    if (themeCheckbox) {
+        themeCheckbox.addEventListener('change', () => {
+            const theme = themeCheckbox.checked ? 'dark' : 'light';
+            applyTheme(theme);
+        });
+    }
+
+    if (mobileThemeBtn) {
+        mobileThemeBtn.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            applyTheme(newTheme);
+        });
+    }
 
     // Load saved theme
-    const savedTheme = localStorage.getItem('rs_dairy_theme_tax');
-    if (savedTheme === 'dark') {
-        themeCheckbox.checked = true;
-        document.documentElement.setAttribute('data-theme', 'dark');
-    }
+    const savedTheme = localStorage.getItem('rs_dairy_theme_tax') || 'light';
+    applyTheme(savedTheme);
 
     // Auto-create date
     const today = new Date().toISOString().split('T')[0];

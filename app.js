@@ -629,6 +629,12 @@ function updatePreviewSummary() {
     // Update bottom total bar
     document.getElementById('prev-total-val').innerText = `₹ ${grandTotal.toLocaleString('en-IN')}`;
 
+    // Update amount payable final value in breakdown
+    const prevPayableFinal = document.getElementById('prev-payable-final');
+    if (prevPayableFinal) {
+        prevPayableFinal.innerText = `₹ ${grandTotal.toLocaleString('en-IN')}`;
+    }
+
     // Update bottom In-Words box
     document.getElementById('prev-amount-words').innerText = appState.currentInvoice.amountInWords || 'Zero Rupees Only';
 

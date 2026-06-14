@@ -570,7 +570,7 @@ function updatePreviewHeader() {
 }
 
 function updatePreviewCustomer() {
-    document.getElementById('prev-cust-name').innerText = (appState.currentInvoice.customer.name || 'MANOKIRAN DAIRY').toUpperCase();
+    document.getElementById('prev-cust-name').innerText = (appState.currentInvoice.customer.name || 'CUSTOMER NAME').toUpperCase();
     document.getElementById('prev-cust-pos').innerText = 'Place of Supply: ' + (appState.currentInvoice.placeOfSupply || 'Maharashtra');
     document.getElementById('prev-cust-phone').innerText = appState.currentInvoice.customer.phone ? 'Mobile: ' + appState.currentInvoice.customer.phone : 'Mobile: ';
 }

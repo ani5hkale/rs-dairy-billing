@@ -362,7 +362,7 @@ function addInvoiceItem(product = null) {
     const item = {
         id: 'item-' + Date.now() + Math.random().toString(36).substr(2, 5),
         name: product ? product.name : '',
-        hsn: product ? product.hsn : '',
+        hsn: product ? (product.hsn || '-') : '-',
         taxRate: product ? product.taxRate : 5,
         weight: 0,
         quantity: 0,
@@ -451,20 +451,20 @@ function renderInvoiceItems() {
             if (val === 'custom') {
                 nameInput.style.display = 'block';
                 item.name = '';
-                item.hsn = '';
+                item.hsn = '-';
                 item.rate = 0;
                 item.taxRate = 5;
             } else if (val === '') {
                 nameInput.style.display = 'none';
                 item.name = '';
-                item.hsn = '';
+                item.hsn = '-';
                 item.rate = 0;
             } else {
                 nameInput.style.display = 'none';
                 const prod = appState.products.find(p => p.id === val);
                 if (prod) {
                     item.name = prod.name;
-                    item.hsn = prod.hsn;
+                    item.hsn = prod.hsn || '-';
                     item.rate = prod.rate;
                     item.taxRate = prod.taxRate;
                 }
@@ -1018,7 +1018,7 @@ function showProductModal(product = null) {
     openModal(modal, () => {
         const id = document.getElementById('modal-prod-id').value;
         const name = document.getElementById('modal-prod-name').value.trim();
-        const hsn = document.getElementById('modal-prod-hsn').value.trim();
+        const hsn = document.getElementById('modal-prod-hsn').value.trim() || '-';
         const rate = parseFloat(document.getElementById('modal-prod-rate').value) || 0;
         const taxRate = parseFloat(document.getElementById('modal-prod-tax').value) || 0;
 

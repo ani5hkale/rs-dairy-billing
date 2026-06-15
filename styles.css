@@ -798,41 +798,60 @@ td input, td select {
 
 /* --- PRINT VIEW STYLING (CRITICAL FOR INVOICE) --- */
 @media print {
-    /* Hide all elements by default */
-    body * {
-        visibility: hidden !important;
+    /* Hide all non-printable elements entirely so they don't take up height */
+    aside,
+    header.mobile-top-header,
+    .view-header,
+    .card,
+    .actions-bar,
+    h3,
+    .toast-container,
+    #toast-box {
+        display: none !important;
     }
     
-    /* Make only the invoice card and its child elements visible */
-    #printable-invoice-card, #printable-invoice-card * {
-        visibility: visible !important;
+    /* Reset margins and paddings of parent containers */
+    body, html, .app-container, main, #create-tab {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        height: auto !important;
+        min-height: 0 !important;
+        overflow: visible !important;
+        background: white !important;
+        color: black !important;
     }
     
-    /* Position the invoice at the absolute top-left for zero-margin printing */
+    /* Reset the invoice preview wrapper */
+    .invoice-preview-wrapper {
+        border: none !important;
+        background: transparent !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        overflow: visible !important;
+        height: auto !important;
+    }
+    
+    /* Reset scaled styles on the invoice card itself and format it for A4 printing */
     #printable-invoice-card {
-        position: absolute !important;
-        left: 0 !important;
-        top: 0 !important;
+        transform: scale(1) !important;
+        transform-origin: initial !important;
+        position: static !important; /* static positioning fits page flow best */
         width: 100% !important;
         max-width: 100% !important;
         margin: 0 !important;
-        padding: 0 !important;
+        padding: 40px !important;
         border: 1px solid #000 !important;
         box-shadow: none !important;
         background: white !important;
+        page-break-after: avoid !important;
+        page-break-inside: avoid !important;
     }
     
-    body, html {
-        background: white !important;
-        color: black !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        width: 100% !important;
-    }
-    
-    /* Hide page margins and browser headers/footers in the stylesheet */
+    /* Set page margins to 0 for print and define size */
     @page {
         margin: 0;
+        size: A4 portrait;
     }
 }
 

@@ -253,6 +253,17 @@ function setupEventListeners() {
         showCustomerSuggestions(val);
     });
 
+    custNameInput.addEventListener('change', (e) => {
+        const val = e.target.value.trim();
+        const savedCust = appState.customers.find(c => c.name.toLowerCase() === val.toLowerCase());
+        if (savedCust) {
+            document.getElementById('cust-phone').value = savedCust.phone;
+            appState.currentInvoice.customer = { name: savedCust.name, phone: savedCust.phone };
+            updatePreviewCustomer();
+            applyCustomerRates(savedCust);
+        }
+    });
+
     custPhoneInput.addEventListener('input', (e) => {
         appState.currentInvoice.customer.phone = e.target.value;
         updatePreviewCustomer();
@@ -483,8 +494,16 @@ function renderInvoiceItems() {
                 if (prod) {
                     item.name = prod.name;
                     item.hsn = prod.hsn || '-';
-                    item.rate = prod.rate;
                     item.taxRate = prod.taxRate;
+
+                    // Fetch custom customer rate if available
+                    const custName = document.getElementById('cust-name').value.trim();
+                    const savedCust = appState.customers.find(c => c.name.toLowerCase() === custName.toLowerCase());
+                    if (savedCust && savedCust.rates && savedCust.rates[prod.id]) {
+                        item.rate = savedCust.rates[prod.id];
+                    } else {
+                        item.rate = prod.rate;
+                    }
                 }
             }
             renderInvoiceItems();
@@ -592,6 +611,26 @@ function updatePreviewCustomer() {
     document.getElementById('prev-cust-name').innerText = (appState.currentInvoice.customer.name || 'CUSTOMER NAME').toUpperCase();
     document.getElementById('prev-cust-pos').innerText = 'Place of Supply: ' + (appState.currentInvoice.placeOfSupply || 'Maharashtra');
     document.getElementById('prev-cust-phone').innerText = appState.currentInvoice.customer.phone ? 'Mobile: ' + appState.currentInvoice.customer.phone : 'Mobile: ';
+}
+
+function applyCustomerRates(cust) {
+    if (!cust) return;
+    const savedCust = appState.customers.find(c => c.name.toLowerCase() === cust.name.toLowerCase());
+    if (!savedCust || !savedCust.rates) return;
+
+    appState.currentInvoice.items.forEach(item => {
+        const product = appState.products.find(p => p.name.toLowerCase() === item.name.toLowerCase());
+        if (product && savedCust.rates[product.id]) {
+            item.rate = savedCust.rates[product.id];
+            const rateInput = document.querySelector(`.item-rate-input[data-id="${item.id}"]`);
+            if (rateInput) {
+                rateInput.value = item.rate;
+            }
+        }
+    });
+
+    renderInvoiceItems();
+    calculateInvoice();
 }
 
 function updatePreviewTable() {
@@ -716,6 +755,7 @@ function showCustomerSuggestions(query) {
             appState.currentInvoice.customer = { name: cust.name, phone: cust.phone };
             container.style.display = 'none';
             updatePreviewCustomer();
+            applyCustomerRates(cust);
         });
         container.appendChild(div);
     });
@@ -932,13 +972,28 @@ function renderDatabaseView() {
     custTbody.innerHTML = '';
     
     if(appState.customers.length === 0) {
-        custTbody.innerHTML = `<tr><td colspan="3" style="text-align: center; color: var(--text-muted);">No customers saved yet.</td></tr>`;
+        custTbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-muted);">No customers saved yet.</td></tr>`;
     } else {
         appState.customers.forEach(c => {
+            let ratesText = 'Default';
+            if (c.rates && Object.keys(c.rates).length > 0) {
+                const ratesArr = [];
+                Object.entries(c.rates).forEach(([prodId, rate]) => {
+                    const prod = appState.products.find(p => p.id === prodId);
+                    if (prod) {
+                        ratesArr.push(`${prod.name}: ₹${rate}`);
+                    }
+                });
+                if (ratesArr.length > 0) {
+                    ratesText = ratesArr.join(', ');
+                }
+            }
+
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td><strong>${c.name}</strong></td>
                 <td>${c.phone}</td>
+                <td><span style="font-size: 0.85rem; color: var(--text-secondary);">${ratesText}</span></td>
                 <td>
                     <div style="display: flex; gap: 8px;">
                         <button class="btn btn-secondary btn-sm edit-cust-btn" data-id="${c.id}">Edit</button>
@@ -1073,17 +1128,33 @@ function showCustomerModal(customer = null) {
 
     title.innerText = customer ? 'Edit Customer Profile' : 'Add New Customer';
 
+    let ratesSection = `
+        <h4 style="margin: 20px 0 10px 0; font-size: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 6px;">Custom Product Rates (₹ / KG)</h4>
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">Leave blank to use the product's default rate.</p>
+    `;
+
+    appState.products.forEach(p => {
+        const customRate = customer && customer.rates && customer.rates[p.id] ? customer.rates[p.id] : '';
+        ratesSection += `
+            <div class="form-group mb-3">
+                <label>${p.name} Custom Rate (Default: ₹${p.rate.toFixed(2)})</label>
+                <input type="number" step="0.01" class="modal-cust-rate-input" data-prod-id="${p.id}" value="${customRate}" placeholder="Default ₹${p.rate.toFixed(2)}">
+            </div>
+        `;
+    });
+
     content.innerHTML = `
-        <form id="modal-customer-form">
+        <form id="modal-customer-form" style="max-height: 400px; overflow-y: auto; padding-right: 8px;">
             <input type="hidden" id="modal-cust-id" value="${customer ? customer.id : ''}">
-            <div class="form-group mb-4">
+            <div class="form-group mb-3">
                 <label>Customer Name</label>
                 <input type="text" id="modal-cust-name" value="${customer ? customer.name : ''}" required>
             </div>
-            <div class="form-group mb-4">
+            <div class="form-group mb-3">
                 <label>Phone / Contact Number</label>
                 <input type="tel" id="modal-cust-phone" value="${customer ? customer.phone : ''}" placeholder="e.g. +91 9999988888">
             </div>
+            ${ratesSection}
         </form>
     `;
 
@@ -1097,16 +1168,26 @@ function showCustomerModal(customer = null) {
             return false;
         }
 
+        // Get custom rates
+        const rates = {};
+        modal.querySelectorAll('.modal-cust-rate-input').forEach(input => {
+            const prodId = input.dataset.prodId;
+            const val = parseFloat(input.value);
+            if (!isNaN(val) && val > 0) {
+                rates[prodId] = val;
+            }
+        });
+
         if (id) { // Edit
             const idx = appState.customers.findIndex(c => c.id === id);
             if (idx !== -1) {
-                appState.customers[idx] = { id, name, phone };
+                appState.customers[idx] = { id, name, phone, rates };
                 showToast('Customer profile updated', 'success');
             }
         } else { // New
             appState.customers.push({
                 id: 'cust-' + Date.now(),
-                name, phone
+                name, phone, rates
             });
             showToast('Customer profile added', 'success');
         }

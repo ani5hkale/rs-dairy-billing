@@ -1156,12 +1156,10 @@ input[type="file"]::file-selector-button:hover {
     }
 }
 
-/* --- Invoice Preview Container & Scroll styling --- */
+/* --- Invoice Preview Container styling --- */
 .invoice-preview-wrapper {
     width: 100%;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    padding: 10px 0;
+    overflow: hidden; /* Prevent horizontal scroll for preview on mobile! */
     margin-bottom: 24px;
     border-radius: var(--radius-lg);
     border: 1px solid var(--border-color);
@@ -1178,15 +1176,133 @@ input[type="file"]::file-selector-button:hover {
     margin: 0 auto !important;
 }
 
-/* Ensure tables have a minimum width on mobile to prevent squishing input columns (Weight, Tax, etc.) */
-#create-tab .table-container table {
-    min-width: 950px !important;
-}
-
+/* Ensure tables have a minimum width on mobile to prevent squishing input columns (only for history and database) */
 #history-tab .table-container table {
     min-width: 750px !important;
 }
 
 #database-tab .table-container table {
     min-width: 550px !important;
+}
+
+/* --- Mobile Stacked Cards Layout for Create Invoice Items --- */
+@media (max-width: 600px) {
+    #create-tab .table-container table {
+        min-width: 0 !important; /* Reset min-width to prevent table scroll */
+    }
+
+    #create-tab .table-container table thead {
+        display: none !important; /* Hide headers */
+    }
+
+    #create-tab .table-container tbody {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 16px !important;
+    }
+
+    #create-tab .table-container tr {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 12px !important;
+        background-color: var(--bg-input) !important;
+        border: 1px solid var(--border-color) !important;
+        border-radius: var(--radius-lg) !important;
+        padding: 16px !important;
+        margin-bottom: 0 !important;
+        box-shadow: var(--shadow-sm) !important;
+        position: relative !important;
+    }
+
+    #create-tab .table-container td {
+        display: block !important;
+        width: 100% !important;
+        padding: 0 !important;
+        border: none !important;
+        background-color: transparent !important;
+    }
+
+    /* Hide standard item number column */
+    #create-tab .table-container td.col-no {
+        display: none !important;
+    }
+
+    #create-tab .table-container td.col-product {
+        grid-column: span 2 !important;
+    }
+
+    #create-tab .table-container td.col-hsn {
+        grid-column: span 1 !important;
+    }
+
+    #create-tab .table-container td.col-tax {
+        grid-column: span 1 !important;
+    }
+
+    #create-tab .table-container td.col-weight {
+        grid-column: span 1 !important;
+    }
+
+    #create-tab .table-container td.col-qty {
+        grid-column: span 1 !important;
+    }
+
+    #create-tab .table-container td.col-rate {
+        grid-column: span 1 !important;
+    }
+
+    #create-tab .table-container td.col-amount {
+        grid-column: span 1 !important;
+        text-align: right !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: flex-end !important;
+        font-weight: 700 !important;
+        font-size: 1.1rem !important;
+        color: var(--primary) !important;
+    }
+
+    /* Add label headers on mobile for readability */
+    #create-tab .table-container td::before {
+        content: attr(data-label);
+        display: block;
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        margin-bottom: 4px;
+        letter-spacing: 0.5px;
+    }
+
+    #create-tab .table-container td.col-amount::before {
+        margin-bottom: 0 !important;
+        margin-right: 8px !important;
+    }
+
+    /* Full-width delete button at bottom of card */
+    #create-tab .table-container td.col-action {
+        grid-column: span 2 !important;
+        border-top: 1px solid var(--border-color) !important;
+        padding-top: 12px !important;
+        margin-top: 4px !important;
+    }
+    
+    #create-tab .table-container td.col-action .delete-item-btn {
+        width: 100% !important;
+        height: 38px !important;
+        border-radius: var(--radius-md) !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 8px !important;
+        background-color: var(--danger-light) !important;
+        color: var(--danger) !important;
+        border: none !important;
+    }
+    
+    #create-tab .table-container td.col-action .delete-item-btn::after {
+        content: "Delete Line Item";
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
 }

@@ -348,7 +348,9 @@ function switchTab(tab) {
         content.classList.toggle('active', content.id === `${tab}-tab`);
     });
 
-    if (tab === 'history') {
+    if (tab === 'create') {
+        setTimeout(scaleInvoicePreview, 50);
+    } else if (tab === 'history') {
         renderHistoryTable();
     } else if (tab === 'database') {
         renderDatabaseView();
@@ -401,16 +403,16 @@ function renderInvoiceItems() {
 
         tr.innerHTML = `
             <td class="col-no">${index + 1}</td>
-            <td class="col-product">
+            <td class="col-product" data-label="Item Name">
                 <select class="item-product-select" data-id="${item.id}">
                     ${productOptions}
                 </select>
                 <input type="text" class="item-name-input mt-1" style="display: ${item.name && !appState.products.some(p => p.name === item.name) || item.name === '' ? 'block' : 'none'}; margin-top: 5px;" placeholder="Enter Item Name" value="${item.name}" data-id="${item.id}">
             </td>
-            <td>
+            <td class="col-hsn" data-label="HSN/SAC">
                 <input type="text" class="item-hsn-input" value="${item.hsn}" placeholder="HSN" data-id="${item.id}">
             </td>
-            <td style="width: 90px;">
+            <td class="col-tax" data-label="Tax (%)" style="width: 90px;">
                 <select class="item-tax-select" data-id="${item.id}">
                     <option value="0" ${item.taxRate == 0 ? 'selected' : ''}>0%</option>
                     <option value="5" ${item.taxRate == 5 ? 'selected' : ''}>5%</option>
@@ -418,16 +420,16 @@ function renderInvoiceItems() {
                     <option value="18" ${item.taxRate == 18 ? 'selected' : ''}>18%</option>
                 </select>
             </td>
-            <td>
+            <td class="col-weight" data-label="Weight (KG)">
                 <input type="number" step="0.01" class="item-weight-input" value="${item.weight || ''}" placeholder="0.00 kg" data-id="${item.id}">
             </td>
-            <td>
+            <td class="col-qty" data-label="Quantity (PCS)">
                 <input type="number" class="item-qty-input" value="${item.quantity || ''}" placeholder="pcs" data-id="${item.id}">
             </td>
-            <td>
+            <td class="col-rate" data-label="Rate (₹/KG)">
                 <input type="number" step="0.01" class="item-rate-input" value="${item.rate || ''}" placeholder="0.00" data-id="${item.id}">
             </td>
-            <td class="col-amount" style="text-align: right;">₹${item.total.toLocaleString('en-IN', {maximumFractionDigits: 0})}</td>
+            <td class="col-amount" data-label="Total:" style="text-align: right;">₹${item.total.toLocaleString('en-IN', {maximumFractionDigits: 0})}</td>
             <td class="col-action">
                 <button class="btn btn-danger btn-icon-only delete-item-btn" data-id="${item.id}">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width: 16px; height: 16px;">
@@ -543,6 +545,7 @@ function updateInvoiceView() {
     updatePreviewTable();
     updatePreviewSummary();
     updatePreviewStamp();
+    scaleInvoicePreview();
 }
 
 function updatePreviewStamp() {
@@ -1162,11 +1165,51 @@ function printInvoice() {
 // --- Helper Functions ---
 function formatDateSlash(dateStr) {
     if (!dateStr) return '';
+    
+    // Attempt standard YYYY-MM-DD split first (highly safe across Safari & older iOS)
+    const parts = dateStr.split('-');
+    if (parts.length === 3) {
+        const year = parts[0];
+        const month = parts[1];
+        const day = parts[2];
+        return `${day}/${month}/${year}`;
+    }
+    
+    // Fallback parsing
     const date = new Date(dateStr);
+    if (isNaN(date.getTime())) return dateStr;
     const day = String(date.getDate()).padStart(2, '0');
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const year = date.getFullYear();
     return `${day}/${month}/${year}`;
+}
+
+function scaleInvoicePreview() {
+    const wrapper = document.querySelector('.invoice-preview-wrapper');
+    const card = document.getElementById('printable-invoice-card');
+    if (!wrapper || !card) return;
+
+    // Reset styles temporarily to measure actual wrapper size
+    card.style.transform = 'none';
+    card.style.transformOrigin = 'initial';
+    wrapper.style.height = 'auto';
+
+    const wrapperWidth = wrapper.clientWidth;
+    const cardWidth = 800; // Fixed A4 width
+
+    if (wrapperWidth < cardWidth && wrapperWidth > 0) {
+        const scale = wrapperWidth / cardWidth;
+        card.style.transform = `scale(${scale})`;
+        card.style.transformOrigin = 'top left';
+        // Adjust the height of wrapper so no blank space is left under the scaled invoice
+        wrapper.style.height = (card.offsetHeight * scale) + 'px';
+        card.style.marginBottom = '0px';
+    } else {
+        card.style.transform = 'none';
+        card.style.transformOrigin = 'initial';
+        wrapper.style.height = 'auto';
+        card.style.marginBottom = '30px';
+    }
 }
 
 function showToast(message, type = 'info') {
@@ -1207,4 +1250,10 @@ document.addEventListener('DOMContentLoaded', () => {
     loadFromLocalStorage();
     setupEventListeners();
     resetCurrentInvoice();
+    
+    // Scale on resize
+    window.addEventListener('resize', scaleInvoicePreview);
+    
+    // Measure on load
+    setTimeout(scaleInvoicePreview, 200);
 });

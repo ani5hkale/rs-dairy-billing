@@ -796,7 +796,7 @@ td input, td select {
 .toast-info { border-left-color: var(--accent); }
 
 /* --- Responsive Adjustments --- */
-@media (max-width: 850px) {
+@media (max-width: 1024px) {
     aside {
         width: 70px;
         padding: 16px 8px;
@@ -954,7 +954,7 @@ td input, td select {
     gap: 20px;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
     .settings-form-grid {
         grid-template-columns: 1fr;
     }
@@ -1231,7 +1231,11 @@ input[type="file"]::file-selector-button:hover {
     margin: 0 auto !important;
 }
 
-/* Ensure tables have a minimum width on mobile to prevent squishing input columns (only for history and database) */
+/* Ensure tables have a minimum width to prevent squishing input columns */
+#create-tab .table-container table {
+    min-width: 950px !important;
+}
+
 #history-tab .table-container table {
     min-width: 750px !important;
 }

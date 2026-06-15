@@ -1248,9 +1248,8 @@ input[type="file"]::file-selector-button:hover {
     min-width: 550px !important;
 }
 
-/* --- Responsive CSS Grid Layout for Create Invoice Items (PC, Tablet, Mobile) --- */
+/* --- Responsive CSS Grid Layout for Create Invoice Items (Cards on All Resolutions) --- */
 
-/* 1. Desktop Mode (width > 900px) */
 #create-tab .table-container table {
     display: block !important;
     width: 100% !important;
@@ -1259,190 +1258,196 @@ input[type="file"]::file-selector-button:hover {
 }
 
 #create-tab .table-container thead {
-    display: block !important;
-    width: 100% !important;
+    display: none !important; /* Hide headers on all resolutions */
 }
 
 #create-tab .table-container tbody {
     display: flex !important;
     flex-direction: column !important;
-    gap: 0 !important;
+    gap: 16px !important;
     width: 100% !important;
 }
 
+/* Base Card Layout for tr */
 #create-tab .table-container tr {
     display: grid !important;
     grid-template-columns: repeat(24, 1fr) !important;
     width: 100% !important;
-    align-items: center !important;
-    border-bottom: 1px solid var(--border-color) !important;
-    background-color: transparent !important;
     box-sizing: border-box !important;
+    background-color: var(--bg-input) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: var(--radius-lg) !important;
+    padding: 20px !important;
+    margin-bottom: 0 !important;
+    box-shadow: var(--shadow-sm) !important;
+    position: relative !important;
+    gap: 16px 20px !important;
 }
 
-#create-tab .table-container thead tr {
-    border-bottom: 2px solid var(--border-color) !important;
-    background-color: rgba(0, 0, 0, 0.02) !important;
-}
-[data-theme="dark"] #create-tab .table-container thead tr {
-    background-color: rgba(255, 255, 255, 0.02) !important;
-}
-
-#create-tab .table-container th,
+/* Base Cell Layout for td */
 #create-tab .table-container td {
     display: block !important;
-    width: auto !important;
-    padding: 12px 8px !important;
+    width: 100% !important;
+    padding: 0 !important;
     border: none !important;
-    box-sizing: border-box !important;
     background-color: transparent !important;
+    box-sizing: border-box !important;
 }
 
-#create-tab .table-container th {
-    font-size: 0.8rem !important;
-    font-weight: 700 !important;
-    color: var(--text-secondary) !important;
-    text-transform: uppercase !important;
-}
-
-/* Hide mobile data labels by default on desktop */
+/* Generate Label Headers on all resolutions */
 #create-tab .table-container td::before {
+    content: attr(data-label);
+    display: block !important;
+    font-size: 0.75rem !important;
+    font-weight: 700 !important;
+    color: var(--text-muted) !important;
+    text-transform: uppercase !important;
+    margin-bottom: 6px !important;
+    letter-spacing: 0.5px !important;
+    text-align: left !important;
+}
+
+/* Specific styling for total amount cell */
+#create-tab .table-container .col-amount {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-end !important;
+    justify-content: center !important;
+    font-weight: 700 !important;
+    font-size: 1.15rem !important;
+    color: var(--primary) !important;
+    text-align: right !important;
+}
+
+#create-tab .table-container td.col-amount::before {
+    margin-bottom: 6px !important;
+    margin-right: 0 !important;
+    align-self: flex-end !important;
+}
+
+/* Delete Item Button */
+#create-tab .table-container td.col-action .delete-item-btn {
+    width: 100% !important;
+    height: 38px !important;
+    border-radius: var(--radius-md) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    background-color: var(--danger-light) !important;
+    color: var(--danger) !important;
+    border: none !important;
+}
+
+/* Compact padding for input fields */
+#create-tab .table-container td input,
+#create-tab .table-container td select {
+    padding: 8px 12px !important;
+    font-size: 0.95rem !important;
+}
+
+/* Hide standard item number column on all screen sizes */
+#create-tab .table-container td.col-no {
     display: none !important;
 }
 
-/* 24-Column Grid mapping for PC row cells */
-#create-tab .table-container .col-no { grid-column: span 1 !important; text-align: center !important; }
-#create-tab .table-container .col-product { grid-column: span 6 !important; }
-#create-tab .table-container .col-hsn { grid-column: span 2 !important; }
-#create-tab .table-container .col-tax { grid-column: span 2 !important; }
-#create-tab .table-container .col-weight { grid-column: span 3 !important; }
-#create-tab .table-container .col-qty { grid-column: span 3 !important; }
-#create-tab .table-container .col-rate { grid-column: span 3 !important; }
-#create-tab .table-container .col-amount { grid-column: span 3 !important; text-align: right !important; }
-#create-tab .table-container .col-action { grid-column: span 1 !important; text-align: center !important; }
+/* --- 1. Desktop Mode (width > 900px) --- */
 
-/* 2. Tablet Mode (600px < width <= 900px) */
+/* Row 1: Product Name (10 cols), HSN (7 cols), Tax (7 cols) */
+#create-tab .table-container .col-product {
+    grid-column: span 10 !important;
+}
+#create-tab .table-container .col-hsn {
+    grid-column: span 7 !important;
+}
+#create-tab .table-container .col-tax {
+    grid-column: span 7 !important;
+}
+
+/* Row 2: Weight (4 cols), Qty (4 cols), Rate (4 cols), Total (6 cols), Action (6 cols) */
+#create-tab .table-container .col-weight {
+    grid-column: span 4 !important;
+}
+#create-tab .table-container .col-qty {
+    grid-column: span 4 !important;
+}
+#create-tab .table-container .col-rate {
+    grid-column: span 4 !important;
+}
+#create-tab .table-container .col-amount {
+    grid-column: span 6 !important;
+}
+#create-tab .table-container .col-action {
+    grid-column: span 6 !important;
+    display: flex !important;
+    align-items: flex-end !important;
+}
+#create-tab .table-container td.col-action::before {
+    display: none !important; /* Hide label for Delete button on PC/Tablet */
+}
+#create-tab .table-container td.col-action .delete-item-btn::after {
+    content: "Delete Item" !important;
+    font-size: 0.85rem !important;
+    font-weight: 600 !important;
+}
+
+/* --- 2. Tablet Mode (600px < width <= 900px) --- */
 @media (max-width: 900px) {
-    #create-tab .table-container thead {
-        display: none !important; /* Hide headers */
-    }
-
-    #create-tab .table-container tbody {
-        gap: 16px !important;
-    }
-
     #create-tab .table-container tr {
-        grid-template-columns: repeat(24, 1fr) !important;
-        background-color: var(--bg-input) !important;
-        border: 1px solid var(--border-color) !important;
-        border-radius: var(--radius-lg) !important;
-        padding: 16px !important;
-        box-shadow: var(--shadow-sm) !important;
         gap: 12px 16px !important;
-        border-bottom: 1px solid var(--border-color) !important;
     }
 
-    #create-tab .table-container td {
-        padding: 0 !important;
-    }
-
-    /* Tablet Spans - Row 1 */
-    #create-tab .table-container .col-no {
-        display: none !important;
-    }
-    #create-tab .table-container .col-product {
-        grid-column: span 12 !important;
-    }
-    #create-tab .table-container .col-hsn {
-        grid-column: span 6 !important;
-    }
-    #create-tab .table-container .col-tax {
-        grid-column: span 6 !important;
-    }
-
-    /* Tablet Spans - Row 2 */
-    #create-tab .table-container .col-weight {
-        grid-column: span 5 !important;
-    }
-    #create-tab .table-container .col-qty {
-        grid-column: span 5 !important;
-    }
-    #create-tab .table-container .col-rate {
-        grid-column: span 5 !important;
-    }
-    #create-tab .table-container .col-amount {
-        grid-column: span 5 !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: flex-end !important;
-        font-weight: 700 !important;
-        font-size: 1.1rem !important;
-        color: var(--primary) !important;
-        text-align: right !important;
-    }
-    #create-tab .table-container .col-action {
-        grid-column: span 4 !important;
-        display: block !important;
-    }
-
-    /* Table Inputs Padding */
     #create-tab .table-container td input,
     #create-tab .table-container td select {
         padding: 8px 8px !important;
         font-size: 0.9rem !important;
     }
 
-    /* Tablet Data Labels */
-    #create-tab .table-container td::before {
-        content: attr(data-label);
-        display: block !important;
-        font-size: 0.75rem !important;
-        font-weight: 700 !important;
-        color: var(--text-muted) !important;
-        text-transform: uppercase !important;
-        margin-bottom: 4px !important;
-        letter-spacing: 0.5px !important;
-        text-align: left !important;
+    /* Row 1: Product (12 cols), HSN (6 cols), Tax (6 cols) */
+    #create-tab .table-container .col-product {
+        grid-column: span 12 !important;
+    }
+    #create-tab .table-container .col-hsn {
+        grid-column: span 6 !important;
+    }
+    #create-tab .table-container .col-tax {
+        grid-column: span 6 !important;
     }
 
-    #create-tab .table-container td.col-amount::before {
-        margin-bottom: 0 !important;
-        margin-right: 8px !important;
+    /* Row 2: Weight (5 cols), Qty (5 cols), Rate (5 cols), Total (5 cols), Action (4 cols) */
+    #create-tab .table-container .col-weight {
+        grid-column: span 5 !important;
     }
-
-    /* Tablet Delete Button */
-    #create-tab .table-container td.col-action .delete-item-btn {
-        width: 100% !important;
-        height: 38px !important;
-        border-radius: var(--radius-md) !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        gap: 6px !important;
-        background-color: var(--danger-light) !important;
-        color: var(--danger) !important;
-        border: none !important;
+    #create-tab .table-container .col-qty {
+        grid-column: span 5 !important;
+    }
+    #create-tab .table-container .col-rate {
+        grid-column: span 5 !important;
+    }
+    #create-tab .table-container .col-amount {
+        grid-column: span 5 !important;
+    }
+    #create-tab .table-container .col-action {
+        grid-column: span 4 !important;
     }
     #create-tab .table-container td.col-action .delete-item-btn::after {
         content: "Delete" !important;
-        font-size: 0.85rem !important;
-        font-weight: 600 !important;
     }
 }
 
-/* 3. Mobile Mode (width <= 600px) */
+/* --- 3. Mobile Mode (width <= 600px) --- */
 @media (max-width: 600px) {
     #create-tab .table-container tr {
         gap: 12px !important;
-        padding: 12px !important;
+        padding: 16px 12px !important;
     }
 
-    /* Mobile Spans - Row 1 */
+    /* Row 1: Product (24 cols) */
     #create-tab .table-container .col-product {
         grid-column: span 24 !important;
     }
 
-    /* Mobile Spans - Row 2 */
+    /* Row 2: HSN (12 cols), Tax (12 cols) */
     #create-tab .table-container .col-hsn {
         grid-column: span 12 !important;
     }
@@ -1450,7 +1455,7 @@ input[type="file"]::file-selector-button:hover {
         grid-column: span 12 !important;
     }
 
-    /* Mobile Spans - Row 3 */
+    /* Row 3: Weight (8 cols), Qty (8 cols), Rate (8 cols) */
     #create-tab .table-container .col-weight {
         grid-column: span 8 !important;
     }
@@ -1461,30 +1466,31 @@ input[type="file"]::file-selector-button:hover {
         grid-column: span 8 !important;
     }
 
-    /* Mobile Spans - Row 4 (Prominent Amount) */
+    /* Row 4: Total Amount (12 cols), Action (12 cols) */
     #create-tab .table-container .col-amount {
-        grid-column: span 24 !important;
-        justify-content: space-between !important;
-        border-top: 1px dashed var(--border-color) !important;
-        padding-top: 10px !important;
-        margin-top: 4px !important;
+        grid-column: span 12 !important;
+        align-items: flex-start !important; /* Align left */
+        border-top: none !important;
+        padding-top: 0 !important;
+        margin-top: 0 !important;
     }
     #create-tab .table-container td.col-amount::before {
-        margin-right: 0 !important;
+        align-self: flex-start !important;
     }
 
-    /* Mobile Spans - Row 5 (Full-width Action) */
     #create-tab .table-container .col-action {
-        grid-column: span 24 !important;
-        border-top: 1px solid var(--border-color) !important;
-        padding-top: 10px !important;
-        margin-top: 4px !important;
+        grid-column: span 12 !important;
+        display: block !important;
+        border-top: none !important;
+        padding-top: 0 !important;
+        margin-top: 0 !important;
     }
     
     #create-tab .table-container td.col-action .delete-item-btn {
         gap: 8px !important;
+        margin-top: 20px !important; /* align with total amount */
     }
     #create-tab .table-container td.col-action .delete-item-btn::after {
-        content: "Delete Line Item" !important;
+        content: "Delete" !important;
     }
 }

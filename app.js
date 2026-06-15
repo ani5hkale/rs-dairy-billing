@@ -135,6 +135,12 @@ function calculateInvoice() {
         totalWeight += weight;
         totalQty += qty;
         totalTax += taxAmount;
+
+        // Update the total cell for this item in the DOM immediately if it exists
+        const amountCell = document.querySelector(`.col-amount[data-id="${item.id}"]`);
+        if (amountCell) {
+            amountCell.innerText = `₹${total.toLocaleString('en-IN', {maximumFractionDigits: 0})}`;
+        }
     });
 
     const grandTotal = subtotal + totalTax;
@@ -429,7 +435,7 @@ function renderInvoiceItems() {
             <td class="col-rate" data-label="Rate (₹/KG)">
                 <input type="number" step="0.01" class="item-rate-input" value="${item.rate || ''}" placeholder="0.00" data-id="${item.id}">
             </td>
-            <td class="col-amount" data-label="Total:" style="text-align: right;">₹${item.total.toLocaleString('en-IN', {maximumFractionDigits: 0})}</td>
+            <td class="col-amount" data-label="Total:" style="text-align: right;" data-id="${item.id}">₹${item.total.toLocaleString('en-IN', {maximumFractionDigits: 0})}</td>
             <td class="col-action">
                 <button class="btn btn-danger btn-icon-only delete-item-btn" data-id="${item.id}">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width: 16px; height: 16px;">

@@ -335,6 +335,16 @@ function setupEventListeners() {
         printInvoice();
     });
 
+    // Save PDF button
+    document.getElementById('download-pdf-btn').addEventListener('click', () => {
+        downloadPDF();
+    });
+
+    // WhatsApp Share button
+    document.getElementById('whatsapp-share-btn').addEventListener('click', () => {
+        shareToWhatsApp();
+    });
+
     // Product form & Customer form in DB tabs
     document.getElementById('add-db-product-btn').addEventListener('click', () => showProductModal());
     document.getElementById('add-db-customer-btn').addEventListener('click', () => showCustomerModal());
@@ -1249,6 +1259,105 @@ function showToast(message, type = 'info') {
         toast.classList.remove('show');
         setTimeout(() => toast.remove(), 400);
     }, 3500);
+}
+
+// --- PDF Generation & Sharing ---
+function downloadPDF() {
+    const element = document.getElementById('printable-invoice-card');
+    const invNum = appState.currentInvoice.invoiceNumber || 'INVOICE';
+    const custName = appState.currentInvoice.customer.name || 'CUSTOMER';
+    const filename = `${invNum}_${custName.replace(/\s+/g, '_')}.pdf`;
+    
+    // Temporarily hide box shadow and margin for clean capture
+    element.classList.add('generating-pdf');
+
+    const opt = {
+        margin:       10, // 10mm margins on all sides
+        filename:     filename,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { 
+            scale: 2, 
+            useCORS: true,
+            logging: false,
+            backgroundColor: '#ffffff'
+        },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+
+    showToast('Generating PDF, please wait...', 'info');
+
+    html2pdf().set(opt).from(element).save().then(() => {
+        element.classList.remove('generating-pdf');
+        showToast('PDF downloaded successfully!', 'success');
+    }).catch(err => {
+        element.classList.remove('generating-pdf');
+        console.error(err);
+        showToast('Error generating PDF', 'error');
+    });
+}
+
+async function shareToWhatsApp() {
+    const element = document.getElementById('printable-invoice-card');
+    const invNum = appState.currentInvoice.invoiceNumber || 'INVOICE';
+    const custName = appState.currentInvoice.customer.name || 'CUSTOMER';
+    const grandTotal = appState.currentInvoice.grandTotal || 0;
+    const phone = appState.currentInvoice.customer.phone || '';
+    
+    element.classList.add('generating-pdf');
+
+    const opt = {
+        margin:       10,
+        filename:     `invoice_${invNum}.pdf`,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { 
+            scale: 2, 
+            useCORS: true,
+            logging: false,
+            backgroundColor: '#ffffff'
+        },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+
+    showToast('Preparing PDF for WhatsApp...', 'info');
+
+    try {
+        // Generate PDF Blob
+        const pdfBlob = await html2pdf().set(opt).from(element).outputPdf('blob');
+        element.classList.remove('generating-pdf');
+
+        const filename = `Invoice_${invNum}_${custName.replace(/\s+/g, '_')}.pdf`;
+        const file = new File([pdfBlob], filename, { type: 'application/pdf' });
+
+        // Helper to clean phone number
+        const cleanPhone = (p) => {
+            if (!p) return '';
+            let cleaned = p.replace(/\D/g, '');
+            if (cleaned.length === 10) cleaned = '91' + cleaned;
+            return cleaned;
+        };
+
+        const textMsg = `Hello,\n\nPlease find attached the Tax Invoice #${invNum} from R S Dairy Farms.\n\n*Invoice Summary:*\n- Invoice No: ${invNum}\n- Date: ${formatDateSlash(appState.currentInvoice.invoiceDate)}\n- Customer: ${custName}\n- Amount Payable: ₹${grandTotal.toLocaleString('en-IN')}\n\nThank you!`;
+
+        // Check if Web Share API with files is supported
+        if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+            await navigator.share({
+                files: [file],
+                title: `Invoice #${invNum}`,
+                text: textMsg
+            });
+            showToast('Invoice shared successfully!', 'success');
+        } else {
+            // Fallback: Redirect directly to WhatsApp Web / App with text message pre-filled
+            const destPhone = cleanPhone(phone);
+            const whatsappUrl = `https://api.whatsapp.com/send?phone=${destPhone}&text=${encodeURIComponent(textMsg)}`;
+            window.open(whatsappUrl, '_blank');
+            showToast('Redirected to WhatsApp with invoice details', 'success');
+        }
+    } catch (err) {
+        element.classList.remove('generating-pdf');
+        console.error(err);
+        showToast('Could not share to WhatsApp', 'error');
+    }
 }
 
 // --- App Bootstrap ---

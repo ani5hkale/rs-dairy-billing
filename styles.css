@@ -525,6 +525,33 @@ td input, td select {
     box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
 }
 
+.btn-whatsapp {
+    background-color: #25D366 !important;
+    border-color: #25D366 !important;
+    color: white !important;
+}
+
+.btn-whatsapp:hover {
+    background-color: #20ba5a !important;
+    box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3) !important;
+}
+
+.btn-pdf {
+    background-color: var(--accent) !important;
+    border-color: var(--accent) !important;
+    color: white !important;
+}
+
+.btn-pdf:hover {
+    background-color: #05a3bd !important;
+    box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3) !important;
+}
+
+.generating-pdf {
+    box-shadow: none !important;
+    margin: 0 !important;
+}
+
 .btn-sm {
     padding: 8px 16px;
     font-size: 0.85rem;

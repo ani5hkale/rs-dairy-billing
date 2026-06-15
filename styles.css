@@ -1023,7 +1023,6 @@ input[type="file"]::file-selector-button:hover {
     /* Convert Sidebar to Bottom Navigation */
     aside {
         width: 100% !important;
-        height: 65px !important;
         position: fixed !important;
         bottom: 0 !important;
         top: auto !important;
@@ -1035,6 +1034,8 @@ input[type="file"]::file-selector-button:hover {
         justify-content: space-around !important;
         align-items: center !important;
         padding: 0 6px !important;
+        padding-bottom: env(safe-area-inset-bottom) !important;
+        height: calc(65px + env(safe-area-inset-bottom)) !important;
         gap: 0 !important;
         z-index: 150 !important;
         background-color: var(--bg-card) !important;
@@ -1105,7 +1106,7 @@ input[type="file"]::file-selector-button:hover {
     main {
         margin-left: 0 !important;
         width: 100% !important;
-        padding: 16px 16px 90px 16px !important;
+        padding: 16px 16px calc(90px + env(safe-area-inset-bottom)) 16px !important;
         margin-top: 60px !important;
     }
 
@@ -1175,4 +1176,17 @@ input[type="file"]::file-selector-button:hover {
     width: 800px !important;
     min-width: 800px !important;
     margin: 0 auto !important;
+}
+
+/* Ensure tables have a minimum width on mobile to prevent squishing input columns (Weight, Tax, etc.) */
+#create-tab .table-container table {
+    min-width: 950px !important;
+}
+
+#history-tab .table-container table {
+    min-width: 750px !important;
+}
+
+#database-tab .table-container table {
+    min-width: 550px !important;
 }

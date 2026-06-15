@@ -385,7 +385,7 @@ function renderInvoiceItems() {
     tbody.innerHTML = '';
 
     if (appState.currentInvoice.items.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-muted);">No items added. Click "Add Line Item" to start.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="9" style="text-align: center; color: var(--text-muted);">No items added. Click "Add Line Item" to start.</td></tr>`;
         return;
     }
 

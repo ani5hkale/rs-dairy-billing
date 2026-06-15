@@ -798,7 +798,13 @@ td input, td select {
 
 /* --- PRINT VIEW STYLING (CRITICAL FOR INVOICE) --- */
 @media print {
-    /* Hide all non-printable elements entirely so they don't take up height */
+    /* Set page margins and size */
+    @page {
+        size: A4 portrait;
+        margin: 10mm;
+    }
+    
+    /* Hide all non-printable elements entirely so they don't take up height/width */
     aside,
     header.mobile-top-header,
     .view-header,
@@ -806,52 +812,55 @@ td input, td select {
     .actions-bar,
     h3,
     .toast-container,
-    #toast-box {
+    #toast-box,
+    .autocomplete-suggestions,
+    .modal {
         display: none !important;
     }
     
     /* Reset margins and paddings of parent containers */
-    body, html, .app-container, main, #create-tab {
+    html, body {
         margin: 0 !important;
         padding: 0 !important;
-        width: 100% !important;
+        width: 190mm !important;
         height: auto !important;
         min-height: 0 !important;
         overflow: visible !important;
         background: white !important;
         color: black !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
     }
     
-    /* Reset the invoice preview wrapper */
-    .invoice-preview-wrapper {
-        border: none !important;
-        background: transparent !important;
-        padding: 0 !important;
+    .app-container, main, #create-tab, .invoice-preview-wrapper {
         margin: 0 !important;
-        overflow: visible !important;
+        padding: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
         height: auto !important;
+        min-height: 0 !important;
+        overflow: visible !important;
+        background: transparent !important;
+        border: none !important;
     }
     
     /* Reset scaled styles on the invoice card itself and format it for A4 printing */
     #printable-invoice-card {
-        transform: scale(1) !important;
+        transform: none !important;
         transform-origin: initial !important;
         position: static !important; /* static positioning fits page flow best */
-        width: 100% !important;
-        max-width: 100% !important;
+        width: 190mm !important;
+        min-width: 190mm !important;
+        max-width: 190mm !important;
         margin: 0 !important;
-        padding: 40px !important;
+        padding: 24px 30px !important;
         border: 1px solid #000 !important;
         box-shadow: none !important;
         background: white !important;
+        box-sizing: border-box !important;
         page-break-after: avoid !important;
         page-break-inside: avoid !important;
-    }
-    
-    /* Set page margins to 0 for print and define size */
-    @page {
-        margin: 0;
-        size: A4 portrait;
+        break-inside: avoid !important;
     }
 }
 

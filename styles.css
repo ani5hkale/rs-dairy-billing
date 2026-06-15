@@ -1239,11 +1239,7 @@ input[type="file"]::file-selector-button:hover {
     margin: 0 auto !important;
 }
 
-/* Ensure tables have a minimum width to prevent squishing input columns */
-#create-tab .table-container table {
-    min-width: 660px !important;
-}
-
+/* Ensure tables have a minimum width to prevent squishing input columns (non-grid tables) */
 #history-tab .table-container table {
     min-width: 750px !important;
 }
@@ -1252,106 +1248,161 @@ input[type="file"]::file-selector-button:hover {
     min-width: 550px !important;
 }
 
-/* --- Mobile Stacked Cards Layout for Create Invoice Items --- */
-@media (max-width: 768px) {
-    #create-tab .table-container table {
-        display: block !important;
-        width: 100% !important;
-        min-width: 0 !important; /* Reset min-width to prevent table scroll */
-        border: none !important;
-    }
+/* --- Responsive CSS Grid Layout for Create Invoice Items (PC, Tablet, Mobile) --- */
 
-    #create-tab .table-container table thead {
+/* 1. Desktop Mode (width > 900px) */
+#create-tab .table-container table {
+    display: block !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    border: none !important;
+}
+
+#create-tab .table-container thead {
+    display: block !important;
+    width: 100% !important;
+}
+
+#create-tab .table-container tbody {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0 !important;
+    width: 100% !important;
+}
+
+#create-tab .table-container tr {
+    display: grid !important;
+    grid-template-columns: repeat(24, 1fr) !important;
+    width: 100% !important;
+    align-items: center !important;
+    border-bottom: 1px solid var(--border-color) !important;
+    background-color: transparent !important;
+    box-sizing: border-box !important;
+}
+
+#create-tab .table-container thead tr {
+    border-bottom: 2px solid var(--border-color) !important;
+    background-color: rgba(0, 0, 0, 0.02) !important;
+}
+[data-theme="dark"] #create-tab .table-container thead tr {
+    background-color: rgba(255, 255, 255, 0.02) !important;
+}
+
+#create-tab .table-container th,
+#create-tab .table-container td {
+    display: block !important;
+    width: auto !important;
+    padding: 12px 8px !important;
+    border: none !important;
+    box-sizing: border-box !important;
+    background-color: transparent !important;
+}
+
+#create-tab .table-container th {
+    font-size: 0.8rem !important;
+    font-weight: 700 !important;
+    color: var(--text-secondary) !important;
+    text-transform: uppercase !important;
+}
+
+/* Hide mobile data labels by default on desktop */
+#create-tab .table-container td::before {
+    display: none !important;
+}
+
+/* 24-Column Grid mapping for PC row cells */
+#create-tab .table-container .col-no { grid-column: span 1 !important; text-align: center !important; }
+#create-tab .table-container .col-product { grid-column: span 6 !important; }
+#create-tab .table-container .col-hsn { grid-column: span 2 !important; }
+#create-tab .table-container .col-tax { grid-column: span 2 !important; }
+#create-tab .table-container .col-weight { grid-column: span 3 !important; }
+#create-tab .table-container .col-qty { grid-column: span 3 !important; }
+#create-tab .table-container .col-rate { grid-column: span 3 !important; }
+#create-tab .table-container .col-amount { grid-column: span 3 !important; text-align: right !important; }
+#create-tab .table-container .col-action { grid-column: span 1 !important; text-align: center !important; }
+
+/* 2. Tablet Mode (600px < width <= 900px) */
+@media (max-width: 900px) {
+    #create-tab .table-container thead {
         display: none !important; /* Hide headers */
     }
 
     #create-tab .table-container tbody {
-        display: flex !important;
-        flex-direction: column !important;
         gap: 16px !important;
-        width: 100% !important;
     }
 
     #create-tab .table-container tr {
-        display: grid !important;
-        grid-template-columns: 1fr 1fr !important;
-        gap: 12px !important;
-        width: 100% !important;
-        box-sizing: border-box !important;
+        grid-template-columns: repeat(24, 1fr) !important;
         background-color: var(--bg-input) !important;
         border: 1px solid var(--border-color) !important;
         border-radius: var(--radius-lg) !important;
         padding: 16px !important;
-        margin-bottom: 0 !important;
         box-shadow: var(--shadow-sm) !important;
-        position: relative !important;
+        gap: 12px 16px !important;
+        border-bottom: 1px solid var(--border-color) !important;
     }
 
     #create-tab .table-container td {
-        display: block !important;
-        width: 100% !important;
         padding: 0 !important;
-        border: none !important;
-        background-color: transparent !important;
-        box-sizing: border-box !important;
     }
 
-    #create-tab .table-container td input,
-    #create-tab .table-container td select {
-        padding: 8px 8px !important;
-        font-size: 0.9rem !important;
-    }
-
-    /* Hide standard item number column */
-    #create-tab .table-container td.col-no {
+    /* Tablet Spans - Row 1 */
+    #create-tab .table-container .col-no {
         display: none !important;
     }
-
-    #create-tab .table-container td.col-product {
-        grid-column: span 2 !important;
+    #create-tab .table-container .col-product {
+        grid-column: span 12 !important;
+    }
+    #create-tab .table-container .col-hsn {
+        grid-column: span 6 !important;
+    }
+    #create-tab .table-container .col-tax {
+        grid-column: span 6 !important;
     }
 
-    #create-tab .table-container td.col-hsn {
-        grid-column: span 1 !important;
+    /* Tablet Spans - Row 2 */
+    #create-tab .table-container .col-weight {
+        grid-column: span 5 !important;
     }
-
-    #create-tab .table-container td.col-tax {
-        grid-column: span 1 !important;
+    #create-tab .table-container .col-qty {
+        grid-column: span 5 !important;
     }
-
-    #create-tab .table-container td.col-weight {
-        grid-column: span 1 !important;
+    #create-tab .table-container .col-rate {
+        grid-column: span 5 !important;
     }
-
-    #create-tab .table-container td.col-qty {
-        grid-column: span 1 !important;
-    }
-
-    #create-tab .table-container td.col-rate {
-        grid-column: span 1 !important;
-    }
-
-    #create-tab .table-container td.col-amount {
-        grid-column: span 1 !important;
-        text-align: right !important;
+    #create-tab .table-container .col-amount {
+        grid-column: span 5 !important;
         display: flex !important;
         align-items: center !important;
         justify-content: flex-end !important;
         font-weight: 700 !important;
         font-size: 1.1rem !important;
         color: var(--primary) !important;
+        text-align: right !important;
+    }
+    #create-tab .table-container .col-action {
+        grid-column: span 4 !important;
+        display: block !important;
     }
 
-    /* Add label headers on mobile for readability */
+    /* Table Inputs Padding */
+    #create-tab .table-container td input,
+    #create-tab .table-container td select {
+        padding: 8px 8px !important;
+        font-size: 0.9rem !important;
+    }
+
+    /* Tablet Data Labels */
     #create-tab .table-container td::before {
         content: attr(data-label);
-        display: block;
-        font-size: 0.75rem;
-        font-weight: 700;
-        color: var(--text-muted);
-        text-transform: uppercase;
-        margin-bottom: 4px;
-        letter-spacing: 0.5px;
+        display: block !important;
+        font-size: 0.75rem !important;
+        font-weight: 700 !important;
+        color: var(--text-muted) !important;
+        text-transform: uppercase !important;
+        margin-bottom: 4px !important;
+        letter-spacing: 0.5px !important;
+        text-align: left !important;
     }
 
     #create-tab .table-container td.col-amount::before {
@@ -1359,14 +1410,7 @@ input[type="file"]::file-selector-button:hover {
         margin-right: 8px !important;
     }
 
-    /* Full-width delete button at bottom of card */
-    #create-tab .table-container td.col-action {
-        grid-column: span 2 !important;
-        border-top: 1px solid var(--border-color) !important;
-        padding-top: 12px !important;
-        margin-top: 4px !important;
-    }
-    
+    /* Tablet Delete Button */
     #create-tab .table-container td.col-action .delete-item-btn {
         width: 100% !important;
         height: 38px !important;
@@ -1374,15 +1418,73 @@ input[type="file"]::file-selector-button:hover {
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        gap: 8px !important;
+        gap: 6px !important;
         background-color: var(--danger-light) !important;
         color: var(--danger) !important;
         border: none !important;
     }
-    
     #create-tab .table-container td.col-action .delete-item-btn::after {
-        content: "Delete Line Item";
-        font-size: 0.85rem;
-        font-weight: 600;
+        content: "Delete" !important;
+        font-size: 0.85rem !important;
+        font-weight: 600 !important;
+    }
+}
+
+/* 3. Mobile Mode (width <= 600px) */
+@media (max-width: 600px) {
+    #create-tab .table-container tr {
+        gap: 12px !important;
+        padding: 12px !important;
+    }
+
+    /* Mobile Spans - Row 1 */
+    #create-tab .table-container .col-product {
+        grid-column: span 24 !important;
+    }
+
+    /* Mobile Spans - Row 2 */
+    #create-tab .table-container .col-hsn {
+        grid-column: span 12 !important;
+    }
+    #create-tab .table-container .col-tax {
+        grid-column: span 12 !important;
+    }
+
+    /* Mobile Spans - Row 3 */
+    #create-tab .table-container .col-weight {
+        grid-column: span 8 !important;
+    }
+    #create-tab .table-container .col-qty {
+        grid-column: span 8 !important;
+    }
+    #create-tab .table-container .col-rate {
+        grid-column: span 8 !important;
+    }
+
+    /* Mobile Spans - Row 4 (Prominent Amount) */
+    #create-tab .table-container .col-amount {
+        grid-column: span 24 !important;
+        justify-content: space-between !important;
+        border-top: 1px dashed var(--border-color) !important;
+        padding-top: 10px !important;
+        margin-top: 4px !important;
+    }
+    #create-tab .table-container td.col-amount::before {
+        margin-right: 0 !important;
+    }
+
+    /* Mobile Spans - Row 5 (Full-width Action) */
+    #create-tab .table-container .col-action {
+        grid-column: span 24 !important;
+        border-top: 1px solid var(--border-color) !important;
+        padding-top: 10px !important;
+        margin-top: 4px !important;
+    }
+    
+    #create-tab .table-container td.col-action .delete-item-btn {
+        gap: 8px !important;
+    }
+    #create-tab .table-container td.col-action .delete-item-btn::after {
+        content: "Delete Line Item" !important;
     }
 }

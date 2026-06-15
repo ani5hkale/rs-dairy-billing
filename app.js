@@ -428,7 +428,7 @@ function renderInvoiceItems() {
             <td class="col-hsn" data-label="HSN/SAC">
                 <input type="text" class="item-hsn-input" value="${item.hsn}" placeholder="HSN" data-id="${item.id}">
             </td>
-            <td class="col-tax" data-label="Tax (%)" style="width: 90px;">
+            <td class="col-tax" data-label="Tax (%)">
                 <select class="item-tax-select" data-id="${item.id}">
                     <option value="0" ${item.taxRate == 0 ? 'selected' : ''}>0%</option>
                     <option value="5" ${item.taxRate == 5 ? 'selected' : ''}>5%</option>

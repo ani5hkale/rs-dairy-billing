@@ -1261,47 +1261,24 @@ function showToast(message, type = 'info') {
     }, 3500);
 }
 
-// Helper to generate PDF safely by temporarily disabling scale transforms (critical for html2canvas compatibility)
-function generatePDFBlob(element, opt, callback) {
-    const wrapper = document.querySelector('.invoice-preview-wrapper');
-    
-    // Save original styles
-    const originalTransform = element.style.transform;
-    const originalTransformOrigin = element.style.transformOrigin;
-    const originalWrapperHeight = wrapper ? wrapper.style.height : '';
-
-    // Reset styles temporarily for clean canvas capture
-    element.style.transform = 'none';
-    element.style.transformOrigin = 'initial';
-    if (wrapper) wrapper.style.height = 'auto';
-    element.classList.add('generating-pdf');
-
-    // Run html2pdf promise action
-    return callback()
-        .then(res => {
-            // Restore styles
-            element.classList.remove('generating-pdf');
-            element.style.transform = originalTransform;
-            element.style.transformOrigin = originalTransformOrigin;
-            if (wrapper) wrapper.style.height = originalWrapperHeight;
-            return res;
-        })
-        .catch(err => {
-            // Restore styles in case of error
-            element.classList.remove('generating-pdf');
-            element.style.transform = originalTransform;
-            element.style.transformOrigin = originalTransformOrigin;
-            if (wrapper) wrapper.style.height = originalWrapperHeight;
-            throw err;
-        });
-}
-
 // --- PDF Generation & Sharing ---
 function downloadPDF() {
     const element = document.getElementById('printable-invoice-card');
     const invNum = appState.currentInvoice.invoiceNumber || 'INVOICE';
     const custName = appState.currentInvoice.customer.name || 'CUSTOMER';
     const filename = `${invNum}_${custName.replace(/\s+/g, '_')}.pdf`;
+
+    // Package the outerHTML wrapped in an isolated style block to completely bypass active CSS transforms/shadows
+    const htmlContent = `
+        <style>
+            #printable-invoice-card {
+                box-shadow: none !important;
+                margin: 0 !important;
+                transform: none !important;
+            }
+        </style>
+        ${element.outerHTML}
+    `;
 
     const opt = {
         margin:       10, // 10mm margins on all sides
@@ -1311,21 +1288,21 @@ function downloadPDF() {
             scale: 2, 
             useCORS: true,
             logging: false,
-            backgroundColor: '#ffffff'
+            backgroundColor: '#ffffff',
+            scrollY: 0,
+            scrollX: 0
         },
         jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
 
     showToast('Generating PDF, please wait...', 'info');
 
-    generatePDFBlob(element, opt, () => html2pdf().set(opt).from(element).save())
-        .then(() => {
-            showToast('PDF downloaded successfully!', 'success');
-        })
-        .catch(err => {
-            console.error(err);
-            showToast('Error generating PDF', 'error');
-        });
+    html2pdf().set(opt).from(htmlContent).save().then(() => {
+        showToast('PDF downloaded successfully!', 'success');
+    }).catch(err => {
+        console.error(err);
+        showToast('Error generating PDF', 'error');
+    });
 }
 
 async function shareToWhatsApp() {
@@ -1335,6 +1312,17 @@ async function shareToWhatsApp() {
     const grandTotal = appState.currentInvoice.grandTotal || 0;
     const phone = appState.currentInvoice.customer.phone || '';
 
+    const htmlContent = `
+        <style>
+            #printable-invoice-card {
+                box-shadow: none !important;
+                margin: 0 !important;
+                transform: none !important;
+            }
+        </style>
+        ${element.outerHTML}
+    `;
+
     const opt = {
         margin:       10,
         filename:     `invoice_${invNum}.pdf`,
@@ -1343,7 +1331,9 @@ async function shareToWhatsApp() {
             scale: 2, 
             useCORS: true,
             logging: false,
-            backgroundColor: '#ffffff'
+            backgroundColor: '#ffffff',
+            scrollY: 0,
+            scrollX: 0
         },
         jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
@@ -1351,9 +1341,7 @@ async function shareToWhatsApp() {
     showToast('Preparing PDF for WhatsApp...', 'info');
 
     try {
-        const pdfBlob = await generatePDFBlob(element, opt, () => 
-            html2pdf().set(opt).from(element).outputPdf('blob')
-        );
+        const pdfBlob = await html2pdf().set(opt).from(htmlContent).outputPdf('blob');
 
         const filename = `Invoice_${invNum}_${custName.replace(/\s+/g, '_')}.pdf`;
         const file = new File([pdfBlob], filename, { type: 'application/pdf' });

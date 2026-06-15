@@ -239,7 +239,7 @@ function setupEventListeners() {
     });
     document.getElementById('inv-pos').addEventListener('input', (e) => {
         appState.currentInvoice.placeOfSupply = e.target.value;
-        updatePreviewHeader();
+        updatePreviewCustomer();
     });
 
     // Customer inputs with autocomplete
